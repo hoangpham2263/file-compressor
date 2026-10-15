@@ -5,7 +5,6 @@ Shrink **PDF, Word, PowerPoint and Excel** files right in your browser — nothi
 
 **Demo:** https://hoangpham.is-a.dev/file-compressor/
 
-![File Compressor](./screenshot.webp)
 
 ## Tính năng / Features
 
