@@ -152,3 +152,15 @@ html[lang="vi"] .howto[lang="en"], html[lang="en"] .howto[lang="vi"] { display: 
 .wrap { width: 100%; max-width: 1280px; padding: 32px 16px 48px; }
 @media (min-width: 640px) { .wrap { padding-left: 24px; padding-right: 24px; } }
 @media (min-width: 1024px) { .wrap { padding-left: 32px; padding-right: 32px; } }
+
+/* Header: back link + mobile layout */
+.top-actions { align-items: center; }
+.back { color: var(--primary); }
+@media (max-width: 640px) {
+  .top { flex-wrap: wrap; align-items: flex-start; gap: 10px 12px; }
+  .top-actions { order: -1; width: 100%; justify-content: flex-end; margin: -8px -10px 0 0; }
+  .top-actions .back { margin-right: auto; margin-left: -10px; }
+  .brand img { width: 36px; height: 36px; }
+  h1 { font-size: 22px; }
+  .top p { font-size: 13.5px; }
+}
