@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>File Compressor – Giảm dung lượng PDF, Word, PowerPoint, Excel</title>
+    <meta
+      name="description"
+      content="Giảm dung lượng file PDF, Word, PowerPoint, Excel ngay trên trình duyệt — file không được tải lên đâu cả."
+    />
+    <link rel="icon" href="brand/favicon.ico" sizes="any" />
+    <link rel="icon" href="brand/hp-favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="brand/apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <a class="brand" href="https://hoangpham.is-a.dev" title="HoangPham" aria-label="HoangPham"><img src="brand/hp-icon.svg" alt="HoangPham" width="40" height="40" /></a>
+        <div class="top-text">
+          <h1 data-i18n="title">Giảm dung lượng file</h1>
+          <p class="muted" data-i18n="subtitle">PDF · Word · PowerPoint · Excel — chạy ngay trên trình duyệt, file không được tải lên đâu cả.</p>
+        </div>
+        <div class="top-actions">
+          <button id="lang" class="ghost" type="button" title="English">EN</button>
+          <a class="ghost" href="https://github.com/hoangpham2263/file-compressor" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </header>
+
+      <button id="drop" class="drop" type="button">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3-3 3 3"/></svg>
+        <strong data-i18n="drop">Kéo thả file vào đây hoặc bấm để chọn</strong>
+        <span class="muted small" data-i18n="dropHint">Hỗ trợ .pdf, .docx, .pptx, .xlsx — chọn được nhiều file cùng lúc.</span>
+      </button>
+      <input id="file" type="file" accept=".pdf,.docx,.pptx,.xlsx,application/pdf" multiple hidden />
+
+      <div class="convert">
+        <span class="label" data-i18n="level">Mức nén</span>
+        <div class="seg" id="level">
+          <button type="button" data-level="strong" data-i18n="lvStrong">Nén mạnh</button>
+          <button type="button" data-level="recommended" class="active" data-i18n="lvRecommended">Khuyên dùng</button>
+          <button type="button" data-level="high" data-i18n="lvHigh">Chất lượng cao</button>
+        </div>
+        <span class="label small" id="levelHint"></span>
+      </div>
+
+      <section id="result" hidden>
+        <div class="bar">
+          <p id="summary" class="muted"></p>
+          <div class="actions">
+            <button id="zip" class="primary" type="button" data-i18n="downloadZip">Tải tất cả (ZIP)</button>
+            <button id="clear" class="outline" type="button" data-i18n="clear">Xóa hết</button>
+          </div>
+        </div>
+        <ul id="list"></ul>
+      </section>
+
+      <p class="muted small note" data-i18n="note">
+        Word, PowerPoint, Excel: nén lại ảnh bên trong file, chữ và định dạng giữ nguyên. PDF: nén bằng Ghostscript, chữ vẫn chọn được.
+        Lần đầu nén PDF cần tải thư viện khoảng 15 MB.
+      </p>
+
+      <footer class="muted small">
+        <span data-i18n="footer">Làm bởi</span>
+        <a href="https://hoangpham.is-a.dev" target="_blank" rel="noopener">Phạm Quốc Hoàng</a> · AGPL-3.0
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
