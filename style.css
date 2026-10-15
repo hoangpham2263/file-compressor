@@ -164,3 +164,6 @@ html[lang="vi"] .howto[lang="en"], html[lang="en"] .howto[lang="vi"] { display: 
   h1 { font-size: 22px; }
   .top p { font-size: 13.5px; }
 }
+
+/* Option buttons: regular text weight */
+.seg button, .seg button b, .seg-q b { font-weight: 400; }
