@@ -1,6 +1,6 @@
 # File Compressor
 
-Giảm dung lượng file **PDF, Word, PowerPoint, Excel** ngay trên trình duyệt — file không được tải lên server nào.
+Giảm dung lượng file **PDF, Word, PowerPoint, Excel, LibreOffice, EPUB và ảnh JPG/PNG/WEBP** ngay trên trình duyệt — file không được tải lên server nào.
 Shrink **PDF, Word, PowerPoint and Excel** files right in your browser — nothing is uploaded.
 
 **Demo:** https://hoangpham.is-a.dev/file-compressor/
@@ -18,6 +18,9 @@ Shrink **PDF, Word, PowerPoint and Excel** files right in your browser — nothi
 ## Cách hoạt động / How it works
 
 - **Word, PowerPoint, Excel** là file ZIP. Tool mở file, nén lại các ảnh bên trong (`word/media`, `ppt/media`, `xl/media`) — thu nhỏ ảnh quá lớn, chuyển ảnh không trong suốt sang JPEG — rồi đóng gói lại. Chữ, bảng, định dạng giữ nguyên.
+- **Bản có macro** (`.docm`, `.pptm`, `.xlsm`) xử lý giống Word/PowerPoint/Excel.
+- **LibreOffice** (`.odt`, `.ods`, `.odp`) và **EPUB** cũng là file ZIP: ảnh bên trong được thu nhỏ và nén lại nhưng giữ nguyên định dạng ảnh (không đổi tên file ảnh), file `mimetype` vẫn đứng đầu và không nén theo chuẩn.
+- **Ảnh JPG/PNG/WEBP**: thu nhỏ theo mức nén rồi nén lại; PNG không trong suốt chuyển sang JPG.
   *Office files are ZIP archives: embedded images are downscaled and re-encoded, everything else is untouched.*
 - **PDF** được nén bằng [Ghostscript](https://www.ghostscript.com/) biên dịch sang WebAssembly ([@jspawn/ghostscript-wasm](https://www.npmjs.com/package/@jspawn/ghostscript-wasm)), chữ vẫn chọn/copy được. Lần đầu cần tải thư viện khoảng 15 MB.
   *PDFs go through Ghostscript compiled to WebAssembly; text stays selectable. The ~15 MB engine loads on first use.*

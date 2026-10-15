@@ -13,9 +13,9 @@ const LEVELS = {
 const TEXT = {
   vi: {
     title: "Giảm dung lượng file",
-    subtitle: "PDF · Word · PowerPoint · Excel — chạy ngay trên trình duyệt, file không được tải lên đâu cả.",
+    subtitle: "PDF · Word · PowerPoint · Excel · ảnh · EPUB — chạy ngay trên trình duyệt, file không được tải lên đâu cả.",
     drop: "Kéo thả file vào đây hoặc bấm để chọn",
-    dropHint: "Hỗ trợ .pdf, .docx, .pptx, .xlsx — chọn được nhiều file cùng lúc.",
+    dropHint: "Hỗ trợ PDF, Word, PowerPoint, Excel, LibreOffice (.odt .ods .odp), EPUB, ảnh JPG/PNG/WEBP — chọn được nhiều file cùng lúc.",
     level: "Mức nén",
     lvStrong: "Nén mạnh",
     lvRecommended: "Khuyên dùng",
@@ -33,10 +33,10 @@ const TEXT = {
     processing: "Đang nén…",
     loadingGs: "Đang tải thư viện PDF (~15 MB, chỉ lần đầu)…",
     already: "File đã tối ưu sẵn, giữ nguyên bản gốc",
-    unsupported: "Chưa hỗ trợ loại file này — hãy lưu lại thành .docx / .pptx / .xlsx / .pdf",
+    unsupported: "Chưa hỗ trợ loại file này — hãy lưu lại thành PDF, Word, PowerPoint, Excel hoặc ảnh",
     error: "Không nén được file này",
     files: "file",
-    note: "Word, PowerPoint, Excel: nén lại ảnh bên trong file, chữ và định dạng giữ nguyên. PDF: nén bằng Ghostscript, chữ vẫn chọn được. Lần đầu nén PDF cần tải thư viện khoảng 15 MB.",
+    note: "Word, PowerPoint, Excel, LibreOffice, EPUB: nén lại ảnh bên trong file, chữ và định dạng giữ nguyên. Ảnh: thu nhỏ và nén lại. PDF: nén bằng Ghostscript, chữ vẫn chọn được. Lần đầu nén PDF cần tải thư viện khoảng 15 MB.",
     footer: "Làm bởi",
     switchTo: "EN",
     switchTitle: "English",
@@ -44,9 +44,9 @@ const TEXT = {
   },
   en: {
     title: "File compressor",
-    subtitle: "PDF · Word · PowerPoint · Excel — runs in your browser, nothing is uploaded.",
+    subtitle: "PDF · Word · PowerPoint · Excel · images · EPUB — runs in your browser, nothing is uploaded.",
     drop: "Drop files here or click to choose",
-    dropHint: "Supports .pdf, .docx, .pptx, .xlsx — pick several at once.",
+    dropHint: "Supports PDF, Word, PowerPoint, Excel, LibreOffice (.odt .ods .odp), EPUB, JPG/PNG/WEBP images — pick several at once.",
     level: "Compression",
     lvStrong: "Strong",
     lvRecommended: "Recommended",
@@ -64,10 +64,10 @@ const TEXT = {
     processing: "Compressing…",
     loadingGs: "Loading the PDF engine (~15 MB, first time only)…",
     already: "Already optimised — original kept",
-    unsupported: "File type not supported — save it as .docx / .pptx / .xlsx / .pdf",
+    unsupported: "File type not supported — save it as PDF, Word, PowerPoint, Excel or an image",
     error: "Could not compress this file",
     files: "files",
-    note: "Word, PowerPoint, Excel: images inside are re-compressed, text and formatting are unchanged. PDF: compressed with Ghostscript, text stays selectable. The first PDF needs a ~15 MB engine download.",
+    note: "Word, PowerPoint, Excel, LibreOffice, EPUB: images inside are re-compressed, text and formatting are unchanged. Images: resized and re-compressed. PDF: compressed with Ghostscript, text stays selectable. The first PDF needs a ~15 MB engine download.",
     footer: "Made by",
     switchTo: "VI",
     switchTitle: "Tiếng Việt",
@@ -94,7 +94,10 @@ const extOf = (name) => (name.match(/\.([^.]+)$/)?.[1] || "").toLowerCase();
 const kindOf = (file) => {
   const ext = extOf(file.name);
   if (ext === "pdf") return "pdf";
-  if (["docx", "pptx", "xlsx"].includes(ext)) return "office";
+  if (["docx", "docm", "pptx", "pptm", "xlsx", "xlsm"].includes(ext)) return "office";
+  if (["odt", "ods", "odp"].includes(ext)) return "odf";
+  if (ext === "epub") return "epub";
+  if (["jpg", "jpeg", "png", "webp"].includes(ext)) return "image";
   return "unsupported";
 };
 // Yield so the UI can repaint (setTimeout keeps running in background tabs, unlike rAF)
@@ -136,11 +139,16 @@ async function compressPdf(file, level) {
 }
 
 // ---------- Office: re-encode embedded images ----------
-const MEDIA = /^(word|ppt|xl)\/media\/[^/]+\.(png|jpe?g|bmp)$/i;
+const MEDIA = {
+  office: /^(word|ppt|xl)\/media\/[^/]+\.(png|jpe?g|bmp)$/i,
+  odf: /^Pictures\/[^/]+\.(png|jpe?g)$/i,
+  epub: /\.(png|jpe?g)$/i,
+};
 
-async function reencode(bytes, ext, level) {
+// keepFormat: write back in the same format (for files whose image names cannot change)
+async function reencode(bytes, ext, level, keepFormat = false) {
   const { quality, maxSide } = LEVELS[level];
-  const mime = ext === "png" ? "image/png" : ext === "bmp" ? "image/bmp" : "image/jpeg";
+  const mime = ext === "png" ? "image/png" : ext === "bmp" ? "image/bmp" : ext === "webp" ? "image/webp" : "image/jpeg";
   const bmp = await createImageBitmap(new Blob([bytes], { type: mime }));
   const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
   const w = Math.max(1, Math.round(bmp.width * scale));
@@ -155,11 +163,12 @@ async function reencode(bytes, ext, level) {
 
   // PNG with transparency stays PNG (only resized); opaque images become JPEG
   let transparent = false;
-  if (ext === "png") {
+  if (ext === "png" || ext === "webp") {
     const data = ctx.getImageData(0, 0, w, h).data;
     for (let i = 3; i < data.length; i += 4 * 7) if (data[i] < 255) { transparent = true; break; }
   }
-  const outMime = transparent ? "image/png" : "image/jpeg";
+  const outMime =
+    ext === "webp" ? "image/webp" : keepFormat && ext === "png" ? "image/png" : transparent ? "image/png" : "image/jpeg";
   if (outMime === "image/jpeg") {
     // White background behind any soft edges
     const tmp = ctx.getImageData(0, 0, w, h);
@@ -172,22 +181,32 @@ async function reencode(bytes, ext, level) {
     ctx.drawImage(c2, 0, 0);
   }
   const blob = await new Promise((r) => canvas.toBlob(r, outMime, quality));
-  return { bytes: new Uint8Array(await blob.arrayBuffer()), ext: outMime === "image/png" ? "png" : "jpeg" };
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), ext: outMime.split("/")[1] };
 }
 
-async function compressOffice(file, level) {
+// A single image: resize + re-encode; opaque PNG becomes JPG
+async function compressImage(file, level) {
+  const ext = extOf(file.name);
+  const out = await reencode(new Uint8Array(await file.arrayBuffer()), ext, level);
+  const outExt = out.ext === "jpeg" ? (ext === "jpeg" ? "jpeg" : "jpg") : out.ext;
+  return { blob: new Blob([out.bytes], { type: `image/${out.ext}` }), name: file.name.replace(/\.[^.]+$/, `.${outExt}`) };
+}
+
+// Word/PowerPoint/Excel, OpenDocument and EPUB are ZIP files: re-compress the images inside
+async function compressZip(file, level, kind) {
   const { unzipSync, zipSync, strToU8, strFromU8 } = window.fflate;
   const files = unzipSync(new Uint8Array(await file.arrayBuffer()));
   const renames = []; // [oldPath, newPath]
   let addJpeg = false;
 
   for (const path of Object.keys(files)) {
-    if (!MEDIA.test(path)) continue;
+    if (!MEDIA[kind].test(path)) continue;
     const ext = extOf(path);
     try {
-      const out = await reencode(files[path], ext, level);
+      // Only Office files can rename images (via .rels); others keep the same format
+      const out = await reencode(files[path], ext, level, kind !== "office");
       if (out.bytes.length >= files[path].length) continue; // keep the smaller one
-      if (out.ext === "jpeg" && ext !== "jpeg" && ext !== "jpg") {
+      if (kind === "office" && out.ext === "jpeg" && ext !== "jpeg" && ext !== "jpg") {
         const newPath = path.replace(/\.[^.]+$/, ".jpeg");
         if (files[newPath]) continue;
         delete files[path];
@@ -229,7 +248,11 @@ async function compressOffice(file, level) {
     }
   }
 
-  const zipped = zipSync(files, { level: 9 });
+  // OpenDocument and EPUB need "mimetype" first and uncompressed
+  const ordered = {};
+  if (files.mimetype) ordered.mimetype = [files.mimetype, { level: 0 }];
+  for (const [k, v] of Object.entries(files)) if (k !== "mimetype") ordered[k] = v;
+  const zipped = zipSync(ordered, { level: 9 });
   return new Blob([zipped], { type: file.type || "application/octet-stream" });
 }
 
@@ -253,14 +276,19 @@ async function process() {
     render();
     await nextFrame();
     try {
-      const out =
-        item.kind === "pdf" ? await compressPdf(item.file, state.level) : await compressOffice(item.file, state.level);
+      let out;
+      let outName = item.file.name;
+      if (item.kind === "pdf") out = await compressPdf(item.file, state.level);
+      else if (item.kind === "image") ({ blob: out, name: outName } = await compressImage(item.file, state.level));
+      else out = await compressZip(item.file, state.level, item.kind);
       if (run !== state.run) return;
       if (out.size >= item.file.size) {
         item.out = item.file;
+        item.outName = item.file.name;
         item.note = t("already");
       } else {
         item.out = out;
+        item.outName = outName;
       }
       item.status = "done";
     } catch (e) {
@@ -352,15 +380,15 @@ function saveBlob(blob, name) {
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
 
-const download = (item) => item.status === "done" && saveBlob(item.out, item.file.name);
+const download = (item) => item.status === "done" && saveBlob(item.out, item.outName);
 
 async function downloadZip() {
   const { zipSync } = window.fflate;
   const entries = {};
   for (const item of state.items.filter((i) => i.status === "done")) {
-    let name = item.file.name;
+    let name = item.outName;
     let k = 1;
-    while (entries[name]) name = item.file.name.replace(/(\.[^.]+)$/, `-${k++}$1`);
+    while (entries[name]) name = item.outName.replace(/(\.[^.]+)$/, `-${k++}$1`);
     entries[name] = [new Uint8Array(await item.out.arrayBuffer()), { level: 0 }];
   }
   saveBlob(new Blob([zipSync(entries)], { type: "application/zip" }), `${t("zipName")}.zip`);

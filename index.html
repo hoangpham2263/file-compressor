@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>File Compressor – Giảm dung lượng PDF, Word, PowerPoint, Excel</title>
+    <title>File Compressor – Giảm dung lượng PDF, Word, PowerPoint, Excel, ảnh</title>
     <meta
       name="description"
       content="Giảm dung lượng file PDF, Word, PowerPoint, Excel ngay trên trình duyệt — file không được tải lên đâu cả."
@@ -19,7 +19,7 @@
         <a class="brand" href="https://hoangpham.is-a.dev" title="HoangPham" aria-label="HoangPham"><img src="brand/hp-icon.svg" alt="HoangPham" width="40" height="40" /></a>
         <div class="top-text">
           <h1 data-i18n="title">Giảm dung lượng file</h1>
-          <p class="muted" data-i18n="subtitle">PDF · Word · PowerPoint · Excel — chạy ngay trên trình duyệt, file không được tải lên đâu cả.</p>
+          <p class="muted" data-i18n="subtitle">PDF · Word · PowerPoint · Excel · ảnh · EPUB — chạy ngay trên trình duyệt, file không được tải lên đâu cả.</p>
         </div>
         <div class="top-actions">
           <button id="lang" class="ghost" type="button" title="English">EN</button>
@@ -30,9 +30,9 @@
       <button id="drop" class="drop" type="button">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3-3 3 3"/></svg>
         <strong data-i18n="drop">Kéo thả file vào đây hoặc bấm để chọn</strong>
-        <span class="muted small" data-i18n="dropHint">Hỗ trợ .pdf, .docx, .pptx, .xlsx — chọn được nhiều file cùng lúc.</span>
+        <span class="muted small" data-i18n="dropHint">Hỗ trợ PDF, Word, PowerPoint, Excel, LibreOffice (.odt .ods .odp), EPUB, ảnh JPG/PNG/WEBP — chọn được nhiều file cùng lúc.</span>
       </button>
-      <input id="file" type="file" accept=".pdf,.docx,.pptx,.xlsx,application/pdf" multiple hidden />
+      <input id="file" type="file" accept=".pdf,.docx,.docm,.pptx,.pptm,.xlsx,.xlsm,.odt,.ods,.odp,.epub,.jpg,.jpeg,.png,.webp" multiple hidden />
 
       <div class="convert">
         <span class="label" data-i18n="level">Mức nén</span>
@@ -56,30 +56,34 @@
       </section>
 
       <p class="muted small note" data-i18n="note">
-        Word, PowerPoint, Excel: nén lại ảnh bên trong file, chữ và định dạng giữ nguyên. PDF: nén bằng Ghostscript, chữ vẫn chọn được.
+        Word, PowerPoint, Excel, LibreOffice, EPUB: nén lại ảnh bên trong file, chữ và định dạng giữ nguyên. Ảnh: thu nhỏ và nén lại. PDF: nén bằng Ghostscript, chữ vẫn chọn được.
         Lần đầu nén PDF cần tải thư viện khoảng 15 MB.
       </p>
 
       <details class="howto" lang="vi">
         <summary>Công cụ hoạt động như thế nào?</summary>
         <ol>
-          <li><b>Chọn file:</b> kéo thả hoặc bấm để chọn file .pdf, .docx, .pptx, .xlsx. Chọn được nhiều file cùng lúc.</li>
+          <li><b>Chọn file:</b> kéo thả hoặc bấm để chọn file PDF, Word, PowerPoint, Excel (kể cả bản có macro .docm .pptm .xlsm), LibreOffice (.odt .ods .odp), EPUB hoặc ảnh JPG/PNG/WEBP. Chọn được nhiều file cùng lúc.</li>
           <li><b>Chọn mức nén:</b> "Nén mạnh" cho file nhỏ nhất, "Khuyên dùng" cân bằng, "Chất lượng cao" giữ ảnh nét hơn.</li>
           <li><b>Tải về:</b> tải từng file hoặc bấm "Tải tất cả (ZIP)".</li>
         </ol>
         <p><b>PDF:</b> dùng Ghostscript (bản WebAssembly chạy trong trình duyệt) để nén lại ảnh và tối ưu file. Chữ vẫn giữ nguyên, vẫn chọn và tìm kiếm được. Lần đầu cần tải thư viện khoảng 15 MB.</p>
         <p><b>Word, PowerPoint, Excel:</b> các file này thực chất là file ZIP. Công cụ mở ra, thu nhỏ và nén lại ảnh bên trong (ảnh không trong suốt đổi sang JPG), rồi đóng gói lại. Chữ, bảng, định dạng giữ nguyên.</p>
+        <p><b>LibreOffice, EPUB:</b> cũng là file ZIP, ảnh bên trong được thu nhỏ và nén lại nhưng giữ nguyên định dạng ảnh để file mở bình thường.</p>
+        <p><b>Ảnh JPG/PNG/WEBP:</b> thu nhỏ theo mức nén rồi nén lại. Ảnh PNG không có nền trong suốt sẽ đổi sang JPG cho nhẹ.</p>
         <p>Mọi thứ chạy trên máy bạn, file không được tải lên máy chủ nào. Nếu file sau khi nén không nhỏ hơn, công cụ giữ nguyên file gốc. File gần như không có ảnh sẽ giảm rất ít.</p>
       </details>
       <details class="howto" lang="en">
         <summary>How does it work?</summary>
         <ol>
-          <li><b>Add files:</b> drag and drop or click to choose .pdf, .docx, .pptx, .xlsx files. Several at once is fine.</li>
+          <li><b>Add files:</b> drag and drop or click to choose PDF, Word, PowerPoint, Excel (including macro files .docm .pptm .xlsm), LibreOffice (.odt .ods .odp), EPUB or JPG/PNG/WEBP images. Several at once is fine.</li>
           <li><b>Pick a level:</b> "Strong" for the smallest files, "Recommended" for balance, "High quality" keeps images sharper.</li>
           <li><b>Download:</b> one by one, or all at once as a ZIP.</li>
         </ol>
         <p><b>PDF:</b> compressed with Ghostscript (a WebAssembly build running in your browser), which re-encodes images and optimizes the file. Text stays selectable and searchable. The first run downloads about 15 MB.</p>
         <p><b>Word, PowerPoint, Excel:</b> these files are ZIP archives. The tool opens them, downsizes and re-compresses the images inside (opaque images become JPG), then packs them back. Text, tables and formatting stay the same.</p>
+        <p><b>LibreOffice, EPUB:</b> also ZIP files; images inside are downsized and re-compressed but keep their format so the file still opens normally.</p>
+        <p><b>JPG/PNG/WEBP images:</b> resized for the chosen level and re-compressed. PNGs without transparency become JPG to save space.</p>
         <p>Everything runs on your device; nothing is uploaded. If a result is not smaller, the original is kept. Files with few images will shrink only a little.</p>
       </details>
 
