@@ -60,6 +60,29 @@
         Lần đầu nén PDF cần tải thư viện khoảng 15 MB.
       </p>
 
+      <details class="howto" lang="vi">
+        <summary>Công cụ hoạt động như thế nào?</summary>
+        <ol>
+          <li><b>Chọn file:</b> kéo thả hoặc bấm để chọn file .pdf, .docx, .pptx, .xlsx. Chọn được nhiều file cùng lúc.</li>
+          <li><b>Chọn mức nén:</b> "Nén mạnh" cho file nhỏ nhất, "Khuyên dùng" cân bằng, "Chất lượng cao" giữ ảnh nét hơn.</li>
+          <li><b>Tải về:</b> tải từng file hoặc bấm "Tải tất cả (ZIP)".</li>
+        </ol>
+        <p><b>PDF:</b> dùng Ghostscript (bản WebAssembly chạy trong trình duyệt) để nén lại ảnh và tối ưu file. Chữ vẫn giữ nguyên, vẫn chọn và tìm kiếm được. Lần đầu cần tải thư viện khoảng 15 MB.</p>
+        <p><b>Word, PowerPoint, Excel:</b> các file này thực chất là file ZIP. Công cụ mở ra, thu nhỏ và nén lại ảnh bên trong (ảnh không trong suốt đổi sang JPG), rồi đóng gói lại. Chữ, bảng, định dạng giữ nguyên.</p>
+        <p>Mọi thứ chạy trên máy bạn, file không được tải lên máy chủ nào. Nếu file sau khi nén không nhỏ hơn, công cụ giữ nguyên file gốc. File gần như không có ảnh sẽ giảm rất ít.</p>
+      </details>
+      <details class="howto" lang="en">
+        <summary>How does it work?</summary>
+        <ol>
+          <li><b>Add files:</b> drag and drop or click to choose .pdf, .docx, .pptx, .xlsx files. Several at once is fine.</li>
+          <li><b>Pick a level:</b> "Strong" for the smallest files, "Recommended" for balance, "High quality" keeps images sharper.</li>
+          <li><b>Download:</b> one by one, or all at once as a ZIP.</li>
+        </ol>
+        <p><b>PDF:</b> compressed with Ghostscript (a WebAssembly build running in your browser), which re-encodes images and optimizes the file. Text stays selectable and searchable. The first run downloads about 15 MB.</p>
+        <p><b>Word, PowerPoint, Excel:</b> these files are ZIP archives. The tool opens them, downsizes and re-compresses the images inside (opaque images become JPG), then packs them back. Text, tables and formatting stay the same.</p>
+        <p>Everything runs on your device; nothing is uploaded. If a result is not smaller, the original is kept. Files with few images will shrink only a little.</p>
+      </details>
+
       <footer class="muted small">
         <span data-i18n="footer">Làm bởi</span>
         <a href="https://hoangpham.is-a.dev" target="_blank" rel="noopener">Phạm Quốc Hoàng</a> · AGPL-3.0
