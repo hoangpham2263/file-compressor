@@ -167,3 +167,7 @@ html[lang="vi"] .howto[lang="en"], html[lang="en"] .howto[lang="vi"] { display: 
 
 /* Option buttons: regular text weight */
 .seg button, .seg button b, .seg-q b { font-weight: 400; }
+
+/* Header: title only */
+.top p[data-i18n="subtitle"] { display: none; }
+.top { align-items: center; }
