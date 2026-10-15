@@ -171,3 +171,9 @@ html[lang="vi"] .howto[lang="en"], html[lang="en"] .howto[lang="vi"] { display: 
 /* Header: title only */
 .top p[data-i18n="subtitle"] { display: none; }
 .top { align-items: center; }
+
+/* Minimal font weights: regular text everywhere, medium only for the title */
+strong, b, button, .ghost, .primary, .outline, .btn-sm, .seg button, .seg button b,
+summary, .howto summary, #list .name, .file-row .name, .page, label, .label b, #detected b { font-weight: 400; }
+h1 { font-weight: 600; }
+.badge { font-weight: 600; }
