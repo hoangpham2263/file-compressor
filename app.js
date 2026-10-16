@@ -30,6 +30,9 @@ const TEXT = {
     download: "Tải",
     remove: "Xóa",
     waiting: "Đang chờ…",
+    run: "Nén file",
+    pending: "Chờ nén",
+    readyHint: "chọn mức nén rồi bấm Nén file",
     processing: "Đang nén…",
     loadingGs: "Đang tải thư viện PDF (~15 MB, chỉ lần đầu)…",
     already: "File đã tối ưu sẵn, giữ nguyên bản gốc",
@@ -61,6 +64,9 @@ const TEXT = {
     download: "Download",
     remove: "Remove",
     waiting: "Waiting…",
+    run: "Compress",
+    pending: "Ready to compress",
+    readyHint: "pick a level, then click Compress",
     processing: "Compressing…",
     loadingGs: "Loading the PDF engine (~15 MB, first time only)…",
     already: "Already optimised — original kept",
@@ -257,6 +263,17 @@ async function compressZip(file, level, kind) {
 }
 
 // ---------- Queue ----------
+// New files and level changes only mark results as stale; work starts on the Compress button
+function invalidate() {
+  state.run++;
+  for (const item of state.items) {
+    item.out = undefined;
+    item.note = item.kind === "unsupported" ? t("unsupported") : undefined;
+    item.status = item.kind === "unsupported" ? "error" : "pending";
+  }
+  render();
+}
+
 async function process() {
   const run = ++state.run;
   for (const item of state.items) {
@@ -315,9 +332,11 @@ function render() {
     const pct = Math.round((1 - totalOut / totalIn) * 100);
     $("summary").innerHTML = `${items.length} ${t("files")} · ${formatBytes(totalIn)} → <b>${formatBytes(totalOut)}</b> <span class="good">(-${Math.max(0, pct)}%)</span>`;
   } else {
-    $("summary").textContent = "";
+    $("summary").textContent = items.some((i) => i.status === "pending") ? `${items.length} ${t("files")} · ${t("readyHint")}` : "";
   }
-  $("zip").disabled = busy || !doneItems.length;
+  $("zip").disabled = busy || !doneItems.length || items.some((i) => i.status === "pending");
+  $("run").disabled = busy || !items.some((i) => i.kind !== "unsupported");
+  $("run").textContent = busy ? t("processing") : t("run");
 
   $("list").replaceChildren(
     ...items.map((item) => {
@@ -342,7 +361,7 @@ function render() {
         meta.innerHTML = `<span class="warn"></span>`;
         meta.firstChild.textContent = item.note;
       } else {
-        meta.textContent = t("waiting");
+        meta.textContent = item.status === "pending" ? t("pending") : t("waiting");
       }
       info.append(name, meta);
 
@@ -395,10 +414,10 @@ async function downloadZip() {
 }
 
 function addFiles(files) {
-  const next = [...files].map((file) => ({ file, kind: kindOf(file), status: "waiting" }));
+  const next = [...files].map((file) => ({ file, kind: kindOf(file), status: "pending" }));
   if (!next.length) return;
   state.items.push(...next);
-  process();
+  invalidate();
 }
 
 function applyLang() {
@@ -436,8 +455,9 @@ $("level").onclick = (e) => {
   if (!lv || lv === state.level) return;
   state.level = lv;
   syncLevel();
-  if (state.items.length) process();
+  if (state.items.length) invalidate();
 };
+$("run").onclick = () => process();
 $("zip").onclick = downloadZip;
 $("clear").onclick = () => {
   state.run++;
