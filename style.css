@@ -177,3 +177,8 @@ strong, b, button, .ghost, .primary, .outline, .btn-sm, .seg button, .seg button
 summary, .howto summary, #list .name, .file-row .name, .page, label, .label b, #detected b { font-weight: 400; }
 h1 { font-weight: 600; }
 .badge { font-weight: 600; }
+
+/* Mobile: 16px form text so iOS does not zoom in on focus */
+@media (max-width: 640px) {
+  input, select, textarea { font-size: 16px !important; }
+}
