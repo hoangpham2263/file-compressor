@@ -29,7 +29,8 @@ body {
   color: var(--fg);
   font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
-.wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; display: grid; gap: 16px; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; display: grid; gap: 40px; }
+.content { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 h1 { margin: 0; font-size: 26px; line-height: 1.25; }
 a { color: var(--primary); }
 .muted { color: var(--muted); }
@@ -150,8 +151,8 @@ html[lang="vi"] .howto[lang="en"], html[lang="en"] .howto[lang="vi"] { display: 
 
 /* Container like Tailwind's: full width with breakpoint max-widths */
 .wrap { width: 100%; max-width: 1280px; padding: 32px 16px 48px; }
-@media (min-width: 640px) { .wrap { padding-left: 24px; padding-right: 24px; } }
-@media (min-width: 1024px) { .wrap { padding-left: 32px; padding-right: 32px; } }
+@media (min-width: 640px) { .wrap { padding-left: 24px; padding-right: 24px; gap: 60px; } }
+@media (min-width: 1024px) { .wrap { padding-left: 32px; padding-right: 32px; gap: 80px; } }
 
 /* Header: back link + mobile layout */
 .top-actions { align-items: center; }
